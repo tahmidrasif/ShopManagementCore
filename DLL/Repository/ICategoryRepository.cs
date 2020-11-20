@@ -12,10 +12,7 @@ namespace DLL.Repository
     {
 
         public List<SubCategory> GetAllSubCategory(Expression<Func<SubCategory, bool>> expression = null);
-        public SubCategory GetSingleSubCategory(Expression<Func<SubCategory, bool>> expression = null);
-        void AddSubCategory(SubCategory entity);
-        void UpdateSubCategory(SubCategory entity);
-        void Delete(SubCategory entity);
+        
     }
 
     public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
@@ -26,15 +23,7 @@ namespace DLL.Repository
             _context = context;
         }
 
-        public void AddSubCategory(SubCategory entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(SubCategory entity)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public List<SubCategory> GetAllSubCategory(Expression<Func<SubCategory, bool>> expression = null)
         {
@@ -44,14 +33,6 @@ namespace DLL.Repository
             return  _context.SubCategory.Where(x => x.IsActive == true).Where(expression).ToList();
         }
 
-        public SubCategory GetSingleSubCategory(Expression<Func<SubCategory, bool>> expression = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateSubCategory(SubCategory entity)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

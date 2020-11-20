@@ -11,6 +11,7 @@ namespace BLL
         public static void GetBLLDependency(IServiceCollection services)
         {
             services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<ISubCategoryService, SubCategoryService>();
         }
     }
 }

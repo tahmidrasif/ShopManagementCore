@@ -14,29 +14,29 @@ namespace ShopManagementCore.Controllers
    
     public class SubCategoryController : BaseController
     {
+        private readonly ISubCategoryService _subcategoryService;
         private readonly ICategoryService _categoryService;
-
-        public SubCategoryController(ICategoryService categoryService)
+        public SubCategoryController(ISubCategoryService subcategoryService)
         {
-            _categoryService = categoryService;
+            _subcategoryService = subcategoryService;
         }
 
 
         [HttpGet]
-        [Route("{list}")]
+        [Route("{GetAll}")]
         public IActionResult GetAll()
         {
             try
             {
-                var categoryList = _categoryService.GetAllSubCategory();
+                var oSubcategoryVMList = _subcategoryService.GetAllSubCategory();
 
 
-                if (categoryList != null)
+                if (oSubcategoryVMList != null)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
-                    response.Data = categoryList;
+                    response.Data = oSubcategoryVMList;
 
                     return Ok(response);
                 }
@@ -57,22 +57,56 @@ namespace ShopManagementCore.Controllers
 
         }
 
-
         [HttpGet]
-        [Route("singlebyid/{categoryId}")]
-        public IActionResult GetSingle(long categoryId)
+        [Route("GetAllSubCategoryByCategoryId/{categoryId}")]
+        public IActionResult GetAll(long categoryId)
         {
             try
             {
-                var category = _categoryService.GetSingleCategory(categoryId);
+                var oSubcategoryVMList = _subcategoryService.GetAllSubCategoryByCategoryId(categoryId);
 
 
-                if (category != null)
+                if (oSubcategoryVMList != null)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
-                    response.Data = category;
+                    response.Data = oSubcategoryVMList;
+
+                    return Ok(response);
+                }
+
+                errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+
+                return NotFound(errorResponse);
+            }
+            catch (Exception ex)
+            {
+                errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SERVER_ERROR;
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+
+            }
+
+
+        }
+
+        [HttpGet]
+        [Route("GetSingleById/{subcategoryId}")]
+        public IActionResult GetSingle(long subcategoryId)
+        {
+            try
+            {
+                var oSubcategoryVMList = _subcategoryService.GetSingleSubCategory(subcategoryId);
+
+
+                if (oSubcategoryVMList != null)
+                {
+                    response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
+                    response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
+                    response.ResponseToken = null;
+                    response.Data = oSubcategoryVMList;
 
                     return Ok(response);
                 }
@@ -94,12 +128,12 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpGet]
-        [Route("singlebycode/{categoryCode}")]
-        public IActionResult GetSingle(string categoryCode)
+        [Route("GetSingleByCode/{subcategoryCode}")]
+        public IActionResult GetSingle(string subcategoryCode)
         {
             try
             {
-                var category = _categoryService.GetSingleByCategoryCode(categoryCode);
+                var category = _subcategoryService.GetSingleSubCategoryByCode(subcategoryCode);
 
 
                 if (category != null)
@@ -130,32 +164,26 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpPost]
-        [Route("insert")]
-        public IActionResult Post([FromBody]CategoryInsertRequest category)
+        [Route("InsertSubCategory")]
+        public IActionResult Post([FromBody]SubCategoryInsertRequest subcategoryRequest)
         {
             try
             {
-                if (string.IsNullOrEmpty(category.CategoryCode))
+                if (string.IsNullOrEmpty(subcategoryRequest.SubCategoryCode))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Code Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.CategoryName))
+                if (string.IsNullOrEmpty(subcategoryRequest.SubCategoryName))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Name Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.Description))
-                {
-                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-                    errorResponse.ResponseMessage = "Category Description Required";
-                    return BadRequest(errorResponse);
+              
 
-                }
-
-                string msg = _categoryService.InsertCategory(category);
+                string msg = _subcategoryService.InsertSubCategory(subcategoryRequest);
 
                 if (msg == "Success")
                 {
@@ -185,19 +213,19 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpPut]
-        [Route("update/{categoryid}")]
-        public IActionResult Update(long categoryid, [FromBody] CategoryUpdateRequest category)
+        [Route("UpdateSubcategory/{subcategoryid}")]
+        public IActionResult Update(long subcategoryid, [FromBody] SubCategoryUpdateRequest subcategoryRequest)
         {
             try
             {
 
-                if (string.IsNullOrEmpty(category.CategoryName))
+                if (string.IsNullOrEmpty(subcategoryRequest.SubCategoryName))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Name Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.Description))
+                if (string.IsNullOrEmpty(subcategoryRequest.Description))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Description Required";
@@ -205,9 +233,9 @@ namespace ShopManagementCore.Controllers
 
                 }
 
-                string msg = _categoryService.UpdateCategory(categoryid, category);
+                string msg = _subcategoryService.UpdateSubCategory(subcategoryid, subcategoryRequest);
 
-                if (msg == "Success")
+                if (msg == GlobalConstant.OPERATION_SUCCESS)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
@@ -237,12 +265,12 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpDelete]
-        [Route("delete/{categoryid}")]
+        [Route("DeleteSubCategory/{categoryid}")]
         public IActionResult Delete(long categoryid)
         {
             try
             {
-                string msg = _categoryService.DeleteCategory(categoryid);
+                string msg = _subcategoryService.DeleteSubCategory(categoryid);
 
                 if (msg == "Success")
                 {

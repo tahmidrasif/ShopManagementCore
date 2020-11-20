@@ -9,7 +9,8 @@ namespace DLL.UnitOfWork
     public interface IUnitOfWork:IDisposable
     {
         //Fields
-        ICategoryRepository categoryRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+        ISubCategoryRepository SubCategoryRepository { get;  }
         //End Fields
 
         void BeginTrnsaction();
@@ -21,9 +22,13 @@ namespace DLL.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ShopDBEntities _context;
-        private bool _disposed = false;
-
+        
+        //All Repository Init
         private ICategoryRepository _categoryRepository;
+        private ISubCategoryRepository _subCategoryRepository;
+        //All Repository Init
+
+        private bool _disposed = false;
 
         public UnitOfWork(ShopDBEntities context)
         {
@@ -40,11 +45,12 @@ namespace DLL.UnitOfWork
         //    }
         //}
 
-        public ICategoryRepository categoryRepository => _categoryRepository ??= new CategoryRepository(_context);
+        public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
+        public ISubCategoryRepository SubCategoryRepository => _subCategoryRepository ??= new SubCategoryRepository(_context);
 
 
 
-        //End Initialize
+        //End Initialize Repositories
 
         public void BeginTrnsaction()
         {

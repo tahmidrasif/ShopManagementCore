@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using BLL.Request;
 using BLL.Request.Category;
 using BLL.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ShopManagementCore.Response;
-
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Utility.Helper;
 
 namespace ShopManagementCore.Controllers
@@ -17,28 +13,30 @@ namespace ShopManagementCore.Controllers
     public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
+        private readonly IOptions<GlobalApplicationSetting> _appsetting;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IOptions<GlobalApplicationSetting>  appsetting)
         {
             _categoryService = categoryService;
+            _appsetting = appsetting;
         }
 
 
         [HttpGet]
-        [Route("{list}")]
+        [Route("{GetAll}")]
         public IActionResult GetAll()
         {
             try
             {
-                var categoryList = _categoryService.GetAllCategory();
+                var oCategoryVMList = _categoryService.GetAllCategory();
+                //var msg = _appsetting.Value.ShopName;
 
-
-                if (categoryList != null)
+                if (oCategoryVMList != null)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
-                    response.Data = categoryList;
+                    response.Data = oCategoryVMList;
 
                     return Ok(response);
                 }
@@ -61,20 +59,20 @@ namespace ShopManagementCore.Controllers
 
 
         [HttpGet]
-        [Route("singlebyid/{categoryId}")]
+        [Route("GetSingleById/{categoryId}")]
         public IActionResult GetSingle(long categoryId)
         {
             try
             {
-                var category = _categoryService.GetSingleCategory(categoryId);
+                var oCategoryVM = _categoryService.GetSingleCategory(categoryId);
 
 
-                if (category != null)
+                if (oCategoryVM != null)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
-                    response.Data = category;
+                    response.Data = oCategoryVM;
 
                     return Ok(response);
                 }
@@ -86,7 +84,7 @@ namespace ShopManagementCore.Controllers
             catch (Exception ex)
             {
                 errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SERVER_ERROR;
               
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
 
@@ -96,20 +94,20 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpGet]
-        [Route("singlebycode/{categoryCode}")]
+        [Route("GetSingleByCode/{categoryCode}")]
         public IActionResult GetSingle(string categoryCode)
         {
             try
             {
-                var category = _categoryService.GetSingleByCategoryCode(categoryCode);
+                var oCategoryVM = _categoryService.GetSingleByCategoryCode(categoryCode);
 
 
-                if (category != null)
+                if (oCategoryVM != null)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
-                    response.Data = category;
+                    response.Data = oCategoryVM;
 
                     return Ok(response);
                 }
@@ -122,7 +120,7 @@ namespace ShopManagementCore.Controllers
             catch (Exception ex)
             {
                 errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SERVER_ERROR;
 
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
 
@@ -132,24 +130,24 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpPost]
-        [Route("insert")]
-        public IActionResult Post([FromBody]CategoryInsertRequest category)
+        [Route("InsertCategory")]
+        public IActionResult Post([FromBody]CategoryInsertRequest categoryRequest)
         {
             try
             {
-                if (string.IsNullOrEmpty(category.CategoryCode))
+                if (string.IsNullOrEmpty(categoryRequest.CategoryCode))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Code Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.CategoryName))
+                if (string.IsNullOrEmpty(categoryRequest.CategoryName))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Name Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.Description))
+                if (string.IsNullOrEmpty(categoryRequest.Description))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Description Required";
@@ -157,9 +155,9 @@ namespace ShopManagementCore.Controllers
 
                 }
 
-                string msg=_categoryService.InsertCategory(category);
+                string msg=_categoryService.InsertCategory(categoryRequest);
 
-                if (msg == "Success")
+                if (msg == GlobalConstant.OPERATION_SUCCESS)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
@@ -187,19 +185,19 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpPut]
-        [Route("update/{categoryid}")]
-        public IActionResult Update(long categoryid,[FromBody] CategoryUpdateRequest category)
+        [Route("UpdateCategory/{categoryId}")]
+        public IActionResult Update(long categoryId,[FromBody] CategoryUpdateRequest categoryRequest)
         {
             try
             {
                
-                if (string.IsNullOrEmpty(category.CategoryName))
+                if (string.IsNullOrEmpty(categoryRequest.CategoryName))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Name Required";
                     return BadRequest(errorResponse);
                 }
-                if (string.IsNullOrEmpty(category.Description))
+                if (string.IsNullOrEmpty(categoryRequest.Description))
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
                     errorResponse.ResponseMessage = "Category Description Required";
@@ -207,9 +205,9 @@ namespace ShopManagementCore.Controllers
 
                 }
 
-                string msg = _categoryService.UpdateCategory(categoryid,category);
+                string msg = _categoryService.UpdateCategory(categoryId, categoryRequest);
 
-                if (msg == "Success")
+                if (msg == GlobalConstant.OPERATION_SUCCESS)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
@@ -239,14 +237,14 @@ namespace ShopManagementCore.Controllers
         }
 
         [HttpDelete]
-        [Route("delete/{categoryid}")]
-        public IActionResult Delete(long categoryid)
+        [Route("DeleteCategory/{categoryId}")]
+        public IActionResult Delete(long categoryId)
         {
             try
             {
-                string msg = _categoryService.DeleteCategory(categoryid);
+                string strMsg = _categoryService.DeleteCategory(categoryId);
 
-                if (msg == "Success")
+                if (strMsg == GlobalConstant.OPERATION_SUCCESS)
                 {
                     response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
@@ -257,7 +255,7 @@ namespace ShopManagementCore.Controllers
                 else
                 {
                     errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
-                    errorResponse.ResponseMessage = msg;
+                    errorResponse.ResponseMessage = strMsg;
                  
                     return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
                 }

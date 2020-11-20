@@ -11,9 +11,9 @@ namespace BLL.ViewModel.Category
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public string CategoryCode { get; set; }
-        public string CreatedBy { get;  }
-        public DateTime CreatedOn { get;  }
-        public string UpdatedBy { get; }
-        public DateTime UpdatedOn { get; }
+        //public string CreatedBy { get;  }
+        //public DateTime CreatedOn { get;  }
+        //public string UpdatedBy { get; }
+        //public DateTime UpdatedOn { get; }
     }
 }

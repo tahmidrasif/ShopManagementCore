@@ -6,7 +6,7 @@ using DLL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Utility.Helper;
 
 namespace BLL.Service
 {
@@ -36,23 +36,24 @@ namespace BLL.Service
         {
             try
             {
-                List<CategoryViewModel> categoryVMList = new List<CategoryViewModel>();
-                var categoryList = _unitOfWork.categoryRepository.GetAll(x => x.IsActive == true);
-                if (categoryList != null)
+                List<CategoryViewModel> oCategoryVMList = new List<CategoryViewModel>();
+                var oCategoryList = _unitOfWork.CategoryRepository.GetAll(x => x.IsActive == true);
+                if (oCategoryList != null)
                 {
-                    foreach (var item in categoryList)
+                    foreach (var item in oCategoryList)
                     {
-                        CategoryViewModel categoryVM = new CategoryViewModel();
-                        categoryVM.CategoryCode = item.CategoryCode;
-                        categoryVM.CategoryName = item.CategoryName;
-                        categoryVM.Description = item.Description;
+                        CategoryViewModel oCategoryVM = new CategoryViewModel();
+                        oCategoryVM.CategoryID = item.CategoryId;
+                        oCategoryVM.CategoryCode = item.CategoryCode;
+                        oCategoryVM.CategoryName = item.CategoryName;
+                        oCategoryVM.Description = item.Description;
                         //model.CreatedBy = item.CreatedBy;
                         //model.CreatedOn = item.CreatedOn;
 
-                        categoryVMList.Add(categoryVM);
+                        oCategoryVMList.Add(oCategoryVM);
                     }
 
-                    return categoryVMList;
+                    return oCategoryVMList;
                 }
 
                 else return null;
@@ -71,7 +72,7 @@ namespace BLL.Service
             {
                 if (categoryCode != null)
                 {
-                    var category = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryCode == categoryCode);
+                    var category = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryCode == categoryCode);
                     if (category != null)
                     {
                         CategoryViewModel categoryVM = new CategoryViewModel()
@@ -100,7 +101,7 @@ namespace BLL.Service
             {
                 if (categoryId > 0)
                 {
-                    var category = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryId == categoryId);
+                    var category = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryId == categoryId);
                     if (category != null)
                     {
                         CategoryViewModel categoryVM = new CategoryViewModel()
@@ -123,32 +124,32 @@ namespace BLL.Service
             }
         }
 
-        public string InsertCategory(CategoryInsertRequest category)
+        public string InsertCategory(CategoryInsertRequest categoryRequest)
         {
             try
             {
-                if (IsCategoryCodeExist(category.CategoryCode))
+                if (IsCategoryCodeExist(categoryRequest.CategoryCode))
                 {
                     return "Category Already Exist!!!";
                 }
-                if (IsCategoryNameExist(category.CategoryName))
+                if (IsCategoryNameExist(categoryRequest.CategoryName))
                 {
                     return "Category Already Exist!!!";
                 }
 
-                Category objCategory = new Category()
+                Category oCategory = new Category()
                 {
-                    CategoryCode = category.CategoryCode,
-                    CategoryName = category.CategoryName,
-                    Description = category.Description,
+                    CategoryCode = categoryRequest.CategoryCode,
+                    CategoryName = categoryRequest.CategoryName,
+                    Description = categoryRequest.Description,
                     CreatedBy = "Tahmid",
                     CreatedOn = DateTime.Now,
                     IsActive = true
                 };
 
-                _unitOfWork.categoryRepository.Add(objCategory);
+                _unitOfWork.CategoryRepository.Add(oCategory);
                 _unitOfWork.Save();
-                return "Success";
+                return GlobalConstant.OPERATION_SUCCESS;
             }
             catch (Exception ex)
             {
@@ -158,28 +159,28 @@ namespace BLL.Service
 
         }
 
-        public string UpdateCategory(long categoryid, CategoryUpdateRequest category)
+        public string UpdateCategory(long categoryid, CategoryUpdateRequest categoryRequest)
         {
             try
             {
                 if (categoryid > 0)
                 {
 
-                    var objcategory = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryId == categoryid);
-                    if (objcategory == null)
+                    var oCategory = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryId == categoryid);
+                    if (oCategory == null)
                         return "Invalid Category Id";
 
-                    objcategory.CategoryName = category.CategoryName;
-                    objcategory.Description = category.Description;
-                    objcategory.UpdatedBy = "Tahmid";
-                    objcategory.UpdatedOn = DateTime.Now;
+                    oCategory.CategoryName = categoryRequest.CategoryName;
+                    oCategory.Description = categoryRequest.Description;
+                    oCategory.UpdatedBy = "Tahmid";
+                    oCategory.UpdatedOn = DateTime.Now;
 
-                    _unitOfWork.categoryRepository.Update(objcategory);
+                    _unitOfWork.CategoryRepository.Update(oCategory);
                     _unitOfWork.Save();
 
-                    return "Success";
+                    return GlobalConstant.OPERATION_SUCCESS;
                 }
-                return "Invalid Category Id";
+                return GlobalConstant.OPERATION_ERROR;
             }
             catch (Exception ex)
             {
@@ -189,27 +190,27 @@ namespace BLL.Service
 
         }
 
-        public string DeleteCategory(long categoryid)
+        public string DeleteCategory(long categoryId)
         {
             try
             {
-                if (categoryid > 0)
+                if (categoryId > 0)
                 {
 
-                    var objcategory = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryId == categoryid);
-                    if (objcategory == null)
-                        return "Invalid Category Id";
+                    var oCategory = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryId == categoryId);
+                    if (oCategory == null)
+                        return GlobalConstant.OPERATION_DATA_NOT_FOUND;
 
-                    objcategory.IsActive = false;
-                    objcategory.UpdatedBy = "Tahmid";
-                    objcategory.UpdatedOn = DateTime.Now;
+                    oCategory.IsActive = false;
+                    oCategory.UpdatedBy = "Tahmid";
+                    oCategory.UpdatedOn = DateTime.Now;
 
-                    _unitOfWork.categoryRepository.Delete(objcategory);
+                    _unitOfWork.CategoryRepository.Delete(oCategory);
                     _unitOfWork.Save();
 
-                    return "Success";
+                    return GlobalConstant.OPERATION_SUCCESS;
                 }
-                return "Invalid Category Id";
+                return GlobalConstant.OPERATION_ERROR;
             }
             catch (Exception ex)
             {
@@ -222,12 +223,12 @@ namespace BLL.Service
         {
             try
             {
-                List<SubCategoryViewModel> subcatVMList = new List<SubCategoryViewModel>();
-                var subcategoryList= _unitOfWork.categoryRepository.GetAllSubCategory(null);
+                List<SubCategoryViewModel> oSubcatVMList = new List<SubCategoryViewModel>();
+                var oSubcategoryList= _unitOfWork.CategoryRepository.GetAllSubCategory(null);
 
-                if(subcategoryList!=null && subcategoryList.Count > 0)
+                if(oSubcategoryList != null && oSubcategoryList.Count > 0)
                 {
-                    foreach (var item in subcategoryList)
+                    foreach (var item in oSubcategoryList)
                     {
                         SubCategoryViewModel subcatVM = new SubCategoryViewModel()
                         {
@@ -235,12 +236,12 @@ namespace BLL.Service
                             Name=item.Name,
                             Description= item.Description,
                             CategoryId= item.CategoryId!=null?0:(long)item.CategoryId,
-                            CategoryName= _unitOfWork.categoryRepository.GetSingle(x=>x.CategoryId== item.CategoryId).CategoryName                     
+                            CategoryName= _unitOfWork.CategoryRepository.GetSingle(x=>x.CategoryId== item.CategoryId).CategoryName                     
                         };
-                        subcatVMList.Add(subcatVM);
+                        oSubcatVMList.Add(subcatVM);
                     }
 
-                    return subcatVMList;
+                    return oSubcatVMList;
                 }
                 return null;
             }
@@ -256,16 +257,16 @@ namespace BLL.Service
         #region User Defined Method
         private bool IsCategoryNameExist(string categoryName)
         {
-            var category = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryName == categoryName);
-            if (category != null)
+            var oCategory = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryName == categoryName);
+            if (oCategory != null)
                 return true;
             return false;
         }
 
         private bool IsCategoryCodeExist(string categoryCode)
         {
-            var category = _unitOfWork.categoryRepository.GetSingle(x => x.CategoryCode == categoryCode);
-            if (category != null)
+            var oCategory = _unitOfWork.CategoryRepository.GetSingle(x => x.CategoryCode == categoryCode);
+            if (oCategory != null)
                 return true;
             return false;
         }
