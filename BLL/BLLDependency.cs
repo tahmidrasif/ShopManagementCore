@@ -12,6 +12,9 @@ namespace BLL
         {
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ISubCategoryService, SubCategoryService>();
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IUnitService, UnitService>(); 
+
         }
     }
 }

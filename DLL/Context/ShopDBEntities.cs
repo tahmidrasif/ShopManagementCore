@@ -26,11 +26,12 @@ namespace DLL.Context
         public virtual DbSet<OrderLog> OrderLog { get; set; }
         public virtual DbSet<Payment> Payment { get; set; }
         public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<ProductPrice> ProductPrice { get; set; }
+        public virtual DbSet<ProductPriceLog> ProductPriceLog { get; set; }
         public virtual DbSet<SpecialOffer> SpecialOffer { get; set; }
         public virtual DbSet<Stock> Stock { get; set; }
         public virtual DbSet<StockLog> StockLog { get; set; }
         public virtual DbSet<SubCategory> SubCategory { get; set; }
-        public virtual DbSet<Test> Test { get; set; }
         public virtual DbSet<Unit> Unit { get; set; }
         public virtual DbSet<Vendor> Vendor { get; set; }
 
@@ -269,6 +270,35 @@ namespace DLL.Context
 
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
+                entity.Property(e => e.ProductCode).HasMaxLength(50);
+
+                entity.Property(e => e.SubCategoryId).HasColumnName("SubCategoryID");
+
+                entity.Property(e => e.UnitId).HasColumnName("UnitID");
+
+                entity.Property(e => e.UnitType).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<ProductPrice>(entity =>
+            {
+                entity.Property(e => e.ProductPriceId).HasColumnName("ProductPriceID");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.Ppdiscount)
+                    .HasColumnName("PPDiscount")
+                    .HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.PpotherCharge)
                     .HasColumnName("PPOtherCharge")
                     .HasColumnType("decimal(18, 2)");
@@ -283,7 +313,11 @@ namespace DLL.Context
                     .HasColumnName("PPVatPercent")
                     .HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.ProductCode).HasMaxLength(50);
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+                entity.Property(e => e.Spdiscount)
+                    .HasColumnName("SPDiscount")
+                    .HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.SpotherCharge)
                     .HasColumnName("SPOtherCharge")
@@ -299,23 +333,68 @@ namespace DLL.Context
                     .HasColumnName("SPVatPercent")
                     .HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.SubCategoryId).HasColumnName("SubCategoryID");
+                entity.Property(e => e.TotalPurchasePrice).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.TotalSalesPrice).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.UnitPurchasePrice).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.UnitSalesPrice).HasColumnType("decimal(18, 2)");
+            });
+
+            modelBuilder.Entity<ProductPriceLog>(entity =>
+            {
+                entity.Property(e => e.ProductPriceLogId)
+                    .HasColumnName("ProductPriceLogID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.PpotherCharge)
+                    .HasColumnName("PPOtherCharge")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Ppvat)
+                    .HasColumnName("PPVat")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.PpvatIncluded).HasColumnName("PPVatIncluded");
+
+                entity.Property(e => e.PpvatPercent)
+                    .HasColumnName("PPVatPercent")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+                entity.Property(e => e.ProductPriceId).HasColumnName("ProductPriceID");
+
+                entity.Property(e => e.SpotherCharge)
+                    .HasColumnName("SPOtherCharge")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Spvat)
+                    .HasColumnName("SPVat")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.SpvatIncluded).HasColumnName("SPVatIncluded");
+
+                entity.Property(e => e.SpvatPercent)
+                    .HasColumnName("SPVatPercent")
+                    .HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.TotalPurchasePrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.TotalSalesPrice).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.UnitId).HasColumnName("UnitID");
-
                 entity.Property(e => e.UnitPurchasePrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.UnitSalesPrice).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.UnitType).HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<SpecialOffer>(entity =>
@@ -402,13 +481,6 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<Test>(entity =>
-            {
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Unit>(entity =>

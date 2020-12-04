@@ -1,4 +1,5 @@
 ﻿using DLL.Context;
+using DLL.Models;
 using DLL.Repository;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace DLL.UnitOfWork
         //Fields
         ICategoryRepository CategoryRepository { get; }
         ISubCategoryRepository SubCategoryRepository { get;  }
+        IProductRepository ProductRepository { get; }
+        IUnitRepository UnitRepository { get; }
         //End Fields
 
         void BeginTrnsaction();
@@ -26,6 +29,8 @@ namespace DLL.UnitOfWork
         //All Repository Init
         private ICategoryRepository _categoryRepository;
         private ISubCategoryRepository _subCategoryRepository;
+        private IProductRepository _productRepository;
+        private IUnitRepository _unitRepository;
         //All Repository Init
 
         private bool _disposed = false;
@@ -47,8 +52,8 @@ namespace DLL.UnitOfWork
 
         public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
         public ISubCategoryRepository SubCategoryRepository => _subCategoryRepository ??= new SubCategoryRepository(_context);
-
-
+        public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context);
+        public IUnitRepository UnitRepository => _unitRepository ??= new UnitRepository(_context);
 
         //End Initialize Repositories
 
@@ -96,3 +101,24 @@ namespace DLL.UnitOfWork
 
     }
 }
+
+//public interface IResourcePolicy
+//{
+//    string Version { get; set; }
+//}
+//class MyResourcePolicy : IResourcePolicy
+//{
+//    private string version;
+
+//    public string Version
+//    {
+//        get
+//        {
+//            return this.version;
+//        }
+//        set
+//        {
+//            this.version = value;
+//        }
+//    }
+//}
