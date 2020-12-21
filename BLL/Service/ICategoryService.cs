@@ -36,6 +36,7 @@ namespace BLL.Service
         {
             try
             {
+                _unitOfWork.CategoryRepository.InsertCategory();
                 List<CategoryViewModel> oCategoryVMList = new List<CategoryViewModel>();
                 var oCategoryList = _unitOfWork.CategoryRepository.GetAll(x => x.IsActive == true);
                 if (oCategoryList != null)

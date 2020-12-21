@@ -44,20 +44,20 @@ namespace ShopManagementCore.Controllers
         [Route("{category}")]
         public ActionResult GetCategory()
         {
-            var categoryList = _categoryRepository.ExecuteReader("Select * from Category", System.Data.CommandType.Text, null);
+           // var categoryList = _categoryRepository.ExecuteReader("Select * from Category", System.Data.CommandType.Text, null);
             string jSon = "{ ";
-            foreach (DataRow item in categoryList.Rows)
-            {
-                jSon += "{";
-                foreach (DataColumn dc in categoryList.Columns)
-                {
-                    jSon += item[dc].ToString()+",";
-                }
-                jSon += item[0].ToString();
-                jSon += "}, ";
+            //foreach (DataRow item in categoryList.Rows)
+            //{
+            //    jSon += "{";
+            //    foreach (DataColumn dc in categoryList.Columns)
+            //    {
+            //        jSon += item[dc].ToString()+",";
+            //    }
+            //    jSon += item[0].ToString();
+            //    jSon += "}, ";
 
-            }
-            jSon += "}";
+            //}
+            //jSon += "}";
             return Ok(jSon);
         }
     }

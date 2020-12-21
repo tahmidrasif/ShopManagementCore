@@ -1,6 +1,7 @@
 ﻿using DLL.Context;
 using DLL.Models;
 using DLL.Repository;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,19 +26,23 @@ namespace DLL.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ShopDBEntities _context;
-        
+        private IQueryRepository _queryRepository;
+
         //All Repository Init
         private ICategoryRepository _categoryRepository;
         private ISubCategoryRepository _subCategoryRepository;
         private IProductRepository _productRepository;
         private IUnitRepository _unitRepository;
+        
         //All Repository Init
 
         private bool _disposed = false;
 
-        public UnitOfWork(ShopDBEntities context)
+        public UnitOfWork(ShopDBEntities context,IQueryRepository queryRepository)
         {
             _context = context;
+            
+            _queryRepository = queryRepository;
         }
 
         //Initialize Repositories
@@ -50,11 +55,11 @@ namespace DLL.UnitOfWork
         //    }
         //}
 
-        public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
+        public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context, _queryRepository);
         public ISubCategoryRepository SubCategoryRepository => _subCategoryRepository ??= new SubCategoryRepository(_context);
         public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context);
         public IUnitRepository UnitRepository => _unitRepository ??= new UnitRepository(_context);
-
+        //public IQueryRepository QueryRepository => _queryRepository ??= new QueryRepository(_context);
         //End Initialize Repositories
 
         public void BeginTrnsaction()

@@ -25,6 +25,9 @@ namespace Utility.Helper
         public static string OPERATION_ERROR = "Error";
         public static string OPERATION_TIMEOUT = "Timeout";
         public static string OPERATION_DATA_NOT_FOUND = "Data Not Found";
-     
+
+        //-------------------For Constant Value--------------------------
+        public static string ADMIN_NAME = "Admin";
+
     }
 }

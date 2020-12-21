@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BLL.Request;
 using BLL.Request.Category;
+using BLL.Request.Product;
 using BLL.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -95,184 +96,142 @@ namespace ShopManagementCore.Controllers
 
         }
 
-        //[HttpGet]
-        //[Route("GetSingleByCode/{categoryCode}")]
-        //public IActionResult GetSingle(string categoryCode)
-        //{
-        //    try
-        //    {
-        //        var oCategoryVM = _categoryService.GetSingleByCategoryCode(categoryCode);
 
 
-        //        if (oCategoryVM != null)
-        //        {
-        //            response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
-        //            response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
-        //            response.ResponseToken = null;
-        //            response.Data = oCategoryVM;
+        [HttpPost]
+        [Route("InsertProduct")]
+        public IActionResult Post([FromBody]ProductInsertRequest prodrequest)
+        {
+            try
+            {
+                if (prodrequest == null)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Error in Parameters");
+                }
 
-        //            return Ok(response);
-        //        }
-
-        //        errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-        //        errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
-
-        //        return NotFound(errorResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-        //        errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SERVER_ERROR;
-
-        //        return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-
-        //    }
+                if(String.IsNullOrEmpty(prodrequest.ProductCode) || prodrequest.CategoryId <=0 
+                    || prodrequest.SubCategoryId<=0 || prodrequest.UnitId!<= 0 )
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Error in Parameters");
+                }
 
 
-        //}
+                string msg = _productService.InsertProduct(prodrequest);
 
-        //[HttpPost]
-        //[Route("InsertCategory")]
-        //public IActionResult Post([FromBody]CategoryInsertRequest categoryRequest)
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(categoryRequest.CategoryCode))
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-        //            errorResponse.ResponseMessage = "Category Code Required";
-        //            return BadRequest(errorResponse);
-        //        }
-        //        if (string.IsNullOrEmpty(categoryRequest.CategoryName))
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-        //            errorResponse.ResponseMessage = "Category Name Required";
-        //            return BadRequest(errorResponse);
-        //        }
-        //        if (string.IsNullOrEmpty(categoryRequest.Description))
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-        //            errorResponse.ResponseMessage = "Category Description Required";
-        //            return BadRequest(errorResponse);
+                if (msg == GlobalConstant.OPERATION_SUCCESS)
+                {
+                    response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
+                    response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
+                    response.ResponseToken = null;
+                    response.Data = null;
+                    return Ok(response);
+                }
+                else
+                {
+                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
+                    errorResponse.ResponseMessage = msg;
+                    return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+                }
 
-        //        }
+            }
+            catch (Exception ex)
+            {
+                errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
 
-        //        string msg = _categoryService.InsertCategory(categoryRequest);
-
-        //        if (msg == GlobalConstant.OPERATION_SUCCESS)
-        //        {
-        //            response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
-        //            response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
-        //            response.ResponseToken = null;
-        //            response.Data = null;
-        //            return Ok(response);
-        //        }
-        //        else
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
-        //            errorResponse.ResponseMessage = msg;
-        //            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-        //        errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
-        //        return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-
-        //    }
+            }
 
 
-        //}
+        }
 
-        //[HttpPut]
-        //[Route("UpdateCategory/{categoryId}")]
-        //public IActionResult Update(long categoryId, [FromBody] CategoryUpdateRequest categoryRequest)
-        //{
-        //    try
-        //    {
+        [HttpPut]
+        [Route("Updateproduct/{productid}")]
+        public IActionResult Update(long productid, [FromBody] ProductUpdateRequest product)
+        {
+            try
+            {
 
-        //        if (string.IsNullOrEmpty(categoryRequest.CategoryName))
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-        //            errorResponse.ResponseMessage = "Category Name Required";
-        //            return BadRequest(errorResponse);
-        //        }
-        //        if (string.IsNullOrEmpty(categoryRequest.Description))
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
-        //            errorResponse.ResponseMessage = "Category Description Required";
-        //            return BadRequest(errorResponse);
+                if (string.IsNullOrEmpty(product.Name))
+                {
+                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
+                    errorResponse.ResponseMessage = "Product Name Required";
+                    return BadRequest(errorResponse);
+                }
+                if (product.CategoryId<=0)
+                {
+                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_BAD_REQUEST;
+                    errorResponse.ResponseMessage = "Category Required";
+                    return BadRequest(errorResponse);
 
-        //        }
+                }
 
-        //        string msg = _categoryService.UpdateCategory(categoryId, categoryRequest);
+                string msg = _productService.UpdateProduct(productid, product);
 
-        //        if (msg == GlobalConstant.OPERATION_SUCCESS)
-        //        {
-        //            response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
-        //            response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
-        //            response.ResponseToken = null;
-        //            response.Data = null;
-        //            return Ok(response);
-        //        }
-        //        else
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
-        //            errorResponse.ResponseMessage = msg;
+                if (msg == GlobalConstant.OPERATION_SUCCESS)
+                {
+                    response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
+                    response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
+                    response.ResponseToken = null;
+                    response.Data = null;
+                    return Ok(response);
+                }
+                else
+                {
+                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
+                    errorResponse.ResponseMessage = msg;
 
-        //            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-        //        }
+                    return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+                }
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-        //        errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+            }
+            catch (Exception ex)
+            {
+                errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
 
-        //        return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
 
-        //    }
-
-
-        //}
-
-        //[HttpDelete]
-        //[Route("DeleteCategory/{categoryId}")]
-        //public IActionResult Delete(long categoryId)
-        //{
-        //    try
-        //    {
-        //        string strMsg = _categoryService.DeleteCategory(categoryId);
-
-        //        if (strMsg == GlobalConstant.OPERATION_SUCCESS)
-        //        {
-        //            response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
-        //            response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
-        //            response.ResponseToken = null;
-        //            response.Data = null;
-        //            return Ok(response);
-        //        }
-        //        else
-        //        {
-        //            errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
-        //            errorResponse.ResponseMessage = strMsg;
-
-        //            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
-        //        errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
-
-        //        return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
-
-        //    }
+            }
 
 
-        //}
+        }
+
+        [HttpDelete]
+        [Route("Deleteproduct/{productid}")]
+        public IActionResult Delete(long productid)
+        {
+            try
+            {
+                string strMsg = _productService.DeleteProduct(productid);
+
+                if (strMsg == GlobalConstant.OPERATION_SUCCESS)
+                {
+                    response.ResponseCode = GlobalConstant.RESPONSE_CODE_SUCCESS;
+                    response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
+                    response.ResponseToken = null;
+                    response.Data = null;
+                    return Ok(response);
+                }
+                else
+                {
+                    errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_SERVER_ERROR;
+                    errorResponse.ResponseMessage = strMsg;
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errorResponse.ResponseCode = GlobalConstant.RESPONSE_CODE_NOTFOUND;
+                errorResponse.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_NOTFOUND;
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+
+            }
+
+
+        }
     }
 }

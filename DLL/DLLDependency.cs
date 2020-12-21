@@ -1,9 +1,6 @@
 ﻿using DLL.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using DLL.UnitOfWork;
+using DLL.Repository;
 
 namespace DLL
 {
@@ -12,6 +9,7 @@ namespace DLL
         public static void GetDLLDependency(IServiceCollection services)
         {
             services.AddTransient<IUnitOfWork, UnitOfWork.UnitOfWork>();
+            services.AddTransient<IQueryRepository, QueryRepository>();
         }
     }
 }

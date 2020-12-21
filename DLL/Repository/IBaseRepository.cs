@@ -19,10 +19,7 @@ namespace DLL.Repository
         T GetSingle(Expression<Func<T, bool>> expression = null);
         void Delete(T entity);
         object GetDropdownList(string label, string value, T entity);
-        // 1. SqlCommand approach
-        int ExecuteNonQuery(string commandText, CommandType commandType, SqlParameter[] parameters = null);
-        // 2. SqlQuery approach
-        DataTable ExecuteReader(string commandText, CommandType commandType, SqlParameter[] parameters = null);
+        
     }
 
     public class BaseRepository<T> : IBaseRepository<T> where T : class
@@ -67,54 +64,54 @@ namespace DLL.Repository
             throw new NotImplementedException();
         }
 
-        public int ExecuteNonQuery(string commandText, CommandType commandType, SqlParameter[] parameters = null)
-        {
-            if (_context.Database.GetDbConnection().State == ConnectionState.Closed)
-            {
-                _context.Database.OpenConnection();
-            }
+        //public int ExecuteNonQuery(string commandText, CommandType commandType, SqlParameter[] parameters = null)
+        //{
+        //    if (_context.Database.GetDbConnection().State == ConnectionState.Closed)
+        //    {
+        //        _context.Database.OpenConnection();
+        //    }
 
-            var command = _context.Database.GetDbConnection().CreateCommand();
-            command.CommandText = commandText;
-            command.CommandType = commandType;
+        //    var command = _context.Database.GetDbConnection().CreateCommand();
+        //    command.CommandText = commandText;
+        //    command.CommandType = commandType;
 
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters.Add(parameter);
-                }
-            }
+        //    if (parameters != null)
+        //    {
+        //        foreach (var parameter in parameters)
+        //        {
+        //            command.Parameters.Add(parameter);
+        //        }
+        //    }
 
-            int count = command.ExecuteNonQuery();
-            return count;
-        }
+        //    int count = command.ExecuteNonQuery();
+        //    return count;
+        //}
 
-        public DataTable ExecuteReader(string commandText, CommandType commandType, SqlParameter[] parameters = null)
-        {
-            if (_context.Database.GetDbConnection().State == ConnectionState.Closed)
-            {
-                _context.Database.OpenConnection();
-            }
+        //public DataTable ExecuteReader(string commandText, CommandType commandType, SqlParameter[] parameters = null)
+        //{
+        //    if (_context.Database.GetDbConnection().State == ConnectionState.Closed)
+        //    {
+        //        _context.Database.OpenConnection();
+        //    }
 
-            var command = _context.Database.GetDbConnection().CreateCommand();
-            command.CommandText = commandText;
-            command.CommandType = commandType;
+        //    var command = _context.Database.GetDbConnection().CreateCommand();
+        //    command.CommandText = commandText;
+        //    command.CommandType = commandType;
 
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters.Add(parameter);
-                }
-            }
-            using (var reader = command.ExecuteReader())
-            {
-                DataTable dt = new DataTable();
-                dt.Load(reader);
-                return dt;
-            }
-        }
+        //    if (parameters != null)
+        //    {
+        //        foreach (var parameter in parameters)
+        //        {
+        //            command.Parameters.Add(parameter);
+        //        }
+        //    }
+        //    using (var reader = command.ExecuteReader())
+        //    {
+        //        DataTable dt = new DataTable();
+        //        dt.Load(reader);
+        //        return dt;
+        //    }
+        //}
 
         
     }
