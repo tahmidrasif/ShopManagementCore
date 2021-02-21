@@ -5,6 +5,11 @@ namespace DLL.Models
 {
     public partial class ProductPrice
     {
+        public ProductPrice()
+        {
+            ProductPriceLog = new HashSet<ProductPriceLog>();
+        }
+
         public long ProductPriceId { get; set; }
         public long? ProductId { get; set; }
         public decimal? UnitPurchasePrice { get; set; }
@@ -26,5 +31,7 @@ namespace DLL.Models
         public bool? IsActive { get; set; }
         public decimal? Ppdiscount { get; set; }
         public decimal? Spdiscount { get; set; }
+
+        public virtual ICollection<ProductPriceLog> ProductPriceLog { get; set; }
     }
 }

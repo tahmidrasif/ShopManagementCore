@@ -5,16 +5,21 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Transactions;
 
 namespace DLL.UnitOfWork
 {
-    public interface IUnitOfWork:IDisposable
+    public interface IUnitOfWork : IDisposable
     {
         //Fields
         ICategoryRepository CategoryRepository { get; }
-        ISubCategoryRepository SubCategoryRepository { get;  }
+        ISubCategoryRepository SubCategoryRepository { get; }
         IProductRepository ProductRepository { get; }
         IUnitRepository UnitRepository { get; }
+        IOrderRepository OrderRepository { get; }
+        IPaymentRepository PaymentRepository { get; }
+        IOrderDetailsRepository OrderDetailsRepository { get; }
+        IStockRepository StockRepository { get; }
         //End Fields
 
         void BeginTrnsaction();
@@ -27,21 +32,25 @@ namespace DLL.UnitOfWork
     {
         private readonly ShopDBEntities _context;
         private IQueryRepository _queryRepository;
+        private TransactionScope _transaction;
 
         //All Repository Init
         private ICategoryRepository _categoryRepository;
         private ISubCategoryRepository _subCategoryRepository;
         private IProductRepository _productRepository;
         private IUnitRepository _unitRepository;
-        
+        private IOrderRepository _orderRepository;
+        private IPaymentRepository _paymentRepository;
+        private IOrderDetailsRepository _orderDetailsRepository;
+        private IStockRepository _stockRepository;
         //All Repository Init
 
         private bool _disposed = false;
 
-        public UnitOfWork(ShopDBEntities context,IQueryRepository queryRepository)
+        public UnitOfWork(ShopDBEntities context, IQueryRepository queryRepository)
         {
             _context = context;
-            
+
             _queryRepository = queryRepository;
         }
 
@@ -57,24 +66,38 @@ namespace DLL.UnitOfWork
 
         public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context, _queryRepository);
         public ISubCategoryRepository SubCategoryRepository => _subCategoryRepository ??= new SubCategoryRepository(_context);
-        public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context);
+        public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context,_queryRepository);
         public IUnitRepository UnitRepository => _unitRepository ??= new UnitRepository(_context);
+        public IOrderRepository OrderRepository => _orderRepository ??= new OrderRepository(_context);
+        public IPaymentRepository PaymentRepository => _paymentRepository ??= new PaymentRepository(_context);
+        public IOrderDetailsRepository OrderDetailsRepository => _orderDetailsRepository ??= new OrderDetailsRepository(_context);
+        public IStockRepository StockRepository => _stockRepository ??= new StockRepository(_context);
         //public IQueryRepository QueryRepository => _queryRepository ??= new QueryRepository(_context);
         //End Initialize Repositories
 
         public void BeginTrnsaction()
         {
-            throw new NotImplementedException();
+            if (_transaction == null)
+                _transaction = new TransactionScope();
         }
 
         public void CommitTransaction()
         {
-            throw new NotImplementedException();
+            if (_transaction != null)
+            {
+                _transaction.Complete();
+                this._transaction.Dispose();
+                this._transaction = null;
+            }
         }
 
         public void RollbackTransaction()
         {
-            throw new NotImplementedException();
+            if (_transaction != null)
+            {
+                this._transaction.Dispose();
+                this._transaction = null;
+            }
         }
 
         public void Save()

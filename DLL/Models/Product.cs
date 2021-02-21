@@ -5,6 +5,12 @@ namespace DLL.Models
 {
     public partial class Product
     {
+        public Product()
+        {
+            OrderDetails = new HashSet<OrderDetails>();
+            Stock = new HashSet<Stock>();
+        }
+
         public long ProductId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -18,5 +24,11 @@ namespace DLL.Models
         public bool? IsActive { get; set; }
         public string ProductCode { get; set; }
         public string UnitType { get; set; }
+
+        public virtual Category Category { get; set; }
+        public virtual SubCategory SubCategory { get; set; }
+        public virtual Unit Unit { get; set; }
+        public virtual ICollection<OrderDetails> OrderDetails { get; set; }
+        public virtual ICollection<Stock> Stock { get; set; }
     }
 }

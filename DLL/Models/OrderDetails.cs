@@ -26,5 +26,9 @@ namespace DLL.Models
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public bool? IsActive { get; set; }
+
+        public virtual Order Order { get; set; }
+        public virtual Product Product { get; set; }
+        public virtual Unit Unit { get; set; }
     }
 }

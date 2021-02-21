@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Security;
 using System.Threading.Tasks;
+using AutoMapper;
 using BLL;
+using BLL.ViewModel.AutoMapper;
 using DLL;
 using DLL.Context;
 using DLL.Repository;
@@ -34,16 +39,40 @@ namespace ShopManagementCore
         {
             services.AddControllers();
 
+            //services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            //{
+            //    ClientCertificateOptions = ClientCertificateOption.Manual,
+            //    ServerCertificateCustomValidationCallback =(httpRequestMessage, cert, cetChain, policyErrors) =>
+            //    {
+            //         return true;
+            //    }
+            //});
+
+            ServicePointManager.ServerCertificateValidationCallback = new
+            RemoteCertificateValidationCallback
+            (
+               delegate { return true; }
+            );
 
             services.AddDbContext<ShopDBEntities>(options =>
              options.UseSqlServer(Configuration.GetConnectionString("ShopDbConnection")));
 
             GetAllDependency(services);
+
+            // ...  
+            // Auto Mapper Configurations  
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapping());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddTransient<ICategoryRepository, CategoryRepository>();
 
         }
 
-       
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -63,7 +92,7 @@ namespace ShopManagementCore
             {
                 endpoints.MapControllers();
             });
-            
+
         }
 
         private void GetAllDependency(IServiceCollection services)

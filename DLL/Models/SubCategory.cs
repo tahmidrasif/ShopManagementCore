@@ -5,6 +5,11 @@ namespace DLL.Models
 {
     public partial class SubCategory
     {
+        public SubCategory()
+        {
+            Product = new HashSet<Product>();
+        }
+
         public long SubCategoryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -15,5 +20,8 @@ namespace DLL.Models
         public DateTime? UpdatedOn { get; set; }
         public bool? IsActive { get; set; }
         public string SubCategoryCode { get; set; }
+
+        public virtual Category Category { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
     }
 }

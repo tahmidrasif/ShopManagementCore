@@ -216,6 +216,21 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.VatPercent).HasColumnType("decimal(18, 2)");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("FK_OrderDetails_Order");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_OrderDetails_Product");
+
+                entity.HasOne(d => d.Unit)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.UnitId)
+                    .HasConstraintName("FK_OrderDetails_Unit");
             });
 
             modelBuilder.Entity<OrderLog>(entity =>
@@ -258,6 +273,11 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.Payment)
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("FK_Payment_Order");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -281,6 +301,21 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Product)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_Product_Category");
+
+                entity.HasOne(d => d.SubCategory)
+                    .WithMany(p => p.Product)
+                    .HasForeignKey(d => d.SubCategoryId)
+                    .HasConstraintName("FK_Product_SubCategory");
+
+                entity.HasOne(d => d.Unit)
+                    .WithMany(p => p.Product)
+                    .HasForeignKey(d => d.UnitId)
+                    .HasConstraintName("FK_Product_Unit");
             });
 
             modelBuilder.Entity<ProductPrice>(entity =>
@@ -395,6 +430,11 @@ namespace DLL.Context
                 entity.Property(e => e.UnitPurchasePrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.UnitSalesPrice).HasColumnType("decimal(18, 2)");
+
+                entity.HasOne(d => d.ProductPrice)
+                    .WithMany(p => p.ProductPriceLog)
+                    .HasForeignKey(d => d.ProductPriceId)
+                    .HasConstraintName("FK_ProductPriceLog_ProductPrice");
             });
 
             modelBuilder.Entity<SpecialOffer>(entity =>
@@ -443,6 +483,11 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Stock)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_Stock_Product");
             });
 
             modelBuilder.Entity<StockLog>(entity =>
@@ -481,6 +526,11 @@ namespace DLL.Context
                 entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.SubCategory)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_SubCategory_Category");
             });
 
             modelBuilder.Entity<Unit>(entity =>

@@ -25,5 +25,7 @@ namespace DLL.Models
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
         public bool? IsActive { get; set; }
+
+        public virtual ProductPrice ProductPrice { get; set; }
     }
 }
