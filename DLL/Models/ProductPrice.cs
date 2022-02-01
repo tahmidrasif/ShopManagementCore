@@ -32,6 +32,7 @@ namespace DLL.Models
         public decimal? Ppdiscount { get; set; }
         public decimal? Spdiscount { get; set; }
 
+        public virtual Product Product { get; set; }
         public virtual ICollection<ProductPriceLog> ProductPriceLog { get; set; }
     }
 }

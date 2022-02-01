@@ -31,7 +31,7 @@ namespace ShopManagementCore.Controllers
         {
             try
             {
-                var oProductVMList = _productService.GetAllProduct();
+                var oProductVMList = _productService.GetAllProductVM();
                 //var msg = _appsetting.Value.ShopName;
 
                 if (oProductVMList != null)
@@ -67,7 +67,7 @@ namespace ShopManagementCore.Controllers
         {
             try
             {
-                var oProductVM = _productService.GetSingleProductById(productid);
+                var oProductVM = _productService.GetSingleProductVmById(productid);
 
 
                 if (oProductVM != null)

@@ -8,6 +8,8 @@ namespace DLL.Models
         public Product()
         {
             OrderDetails = new HashSet<OrderDetails>();
+            ProductPrice = new HashSet<ProductPrice>();
+            PurchaseOrderDetails = new HashSet<PurchaseOrderDetails>();
             Stock = new HashSet<Stock>();
         }
 
@@ -29,6 +31,8 @@ namespace DLL.Models
         public virtual SubCategory SubCategory { get; set; }
         public virtual Unit Unit { get; set; }
         public virtual ICollection<OrderDetails> OrderDetails { get; set; }
+        public virtual ICollection<ProductPrice> ProductPrice { get; set; }
+        public virtual ICollection<PurchaseOrderDetails> PurchaseOrderDetails { get; set; }
         public virtual ICollection<Stock> Stock { get; set; }
     }
 }

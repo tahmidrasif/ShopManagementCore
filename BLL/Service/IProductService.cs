@@ -16,6 +16,8 @@ namespace BLL.Service
         string InsertProduct(ProductInsertRequest product);
         string UpdateProduct(long productid, ProductUpdateRequest product);
         string DeleteProduct(long productid);
+        List<ProductViewModel> GetAllProductVM();
+        ProductViewModel GetSingleProductVmById(long id);
     }
 
     public class ProductService : IProductService
@@ -68,6 +70,55 @@ namespace BLL.Service
                             oProductVM.SaleTotalPrice = oProductPrice.Spdiscount ??= 0;
                             oProductVM.SaleTotalPrice = oProductPrice.TotalSalesPrice ??= 0;
                         }
+
+                        oProductVMList.Add(oProductVM);
+                    }
+
+                    return oProductVMList;
+                }
+
+                else return null;
+            }
+            catch (Exception ex)
+            {
+                //Activity Log;
+                throw ex;
+
+            }
+        }
+
+        public List<ProductViewModel> GetAllProductVM()
+        {
+            try
+            {
+                List<ProductViewModel> oProductVMList = new List<ProductViewModel>();
+                var oProductList = _unitOfWork.ProductRepository.GetAllProductVw();
+                if (oProductList != null)
+                {
+                    foreach (var item in oProductList)
+                    {
+                        ProductViewModel oProductVM = new ProductViewModel();
+                        oProductVM.ProductID = item.ProductId;
+                        oProductVM.ProductCode = item.ProductCode;
+                        oProductVM.ProductName = item.ProductName;
+                        oProductVM.UnitID = (long)item.UnitId;
+
+                        oProductVM.UnitName = item.UnitName;
+
+                        oProductVM.AvaliableQty = (decimal)item.AvaliableQty;
+                        oProductVM.CategoryID = (long)item.CategoryId;
+
+                        oProductVM.CategoryName = item.CategoryName;
+                        oProductVM.SubCategoryID = (long)item.SubCategoryId;
+
+                        oProductVM.SubCategoryName = item.SubCategoryName;
+
+                        oProductVM.SaleUnitPrice = item.SaleUnitPrice ??= 0;
+                        oProductVM.SaleVat = item.SaleVat ??= 0;
+                        oProductVM.SaleOtherCharge = item.SaleOtherCharge ??= 0;
+                        oProductVM.SaleTotalPrice = item.SaleDiscount ??= 0;
+                        oProductVM.SaleTotalPrice = item.SaleTotalPrice ??= 0;
+
 
                         oProductVMList.Add(oProductVM);
                     }
@@ -159,6 +210,51 @@ namespace BLL.Service
             }
         }
 
+        public ProductViewModel GetSingleProductVmById(long id)
+        {
+            try
+            {
+                //List<ProductViewModel> oProductVMList = new List<ProductViewModel>();
+                var oProduct = _unitOfWork.ProductRepository.GetProductVwById(id);
+                if (oProduct != null)
+                {
+
+                    ProductViewModel oProductVM = new ProductViewModel();
+                    oProductVM.ProductID = oProduct.ProductId;
+                    oProductVM.ProductCode = oProduct.ProductCode;
+                    oProductVM.ProductName = oProduct.ProductName;
+                    oProductVM.UnitID = (long)oProduct.UnitId;
+
+
+                    oProductVM.UnitName = oProduct.UnitName;
+
+                    oProductVM.AvaliableQty = (decimal)oProduct.AvaliableQty;
+                    oProductVM.CategoryID = (long)oProduct.CategoryId;
+
+                    oProductVM.CategoryName = oProduct.CategoryName;
+                    oProductVM.SubCategoryID = (long)oProduct.SubCategoryId;
+
+                    oProductVM.SubCategoryName = oProduct.SubCategoryName;
+
+                    oProductVM.SaleUnitPrice = oProduct.SaleUnitPrice ??= 0;
+                    oProductVM.SaleVat = oProduct.SaleVat ??= 0;
+                    oProductVM.SaleOtherCharge = oProduct.SaleOtherCharge ??= 0;
+                    oProductVM.SaleTotalPrice = oProduct.SaleDiscount ??= 0;
+                    oProductVM.SaleTotalPrice = oProduct.SaleTotalPrice ??= 0;
+
+                    return oProductVM;
+                }
+
+                else return null;
+            }
+            catch (Exception ex)
+            {
+                //Activity Log;
+                throw ex;
+
+            }
+        }
+
         public string InsertProduct(ProductInsertRequest product)
         {
             try
@@ -222,7 +318,7 @@ namespace BLL.Service
                 {
                     if (productid > 0)
                     {
-                       
+
 
                         var category = _categoryService.GetSingleCategory((long)product.CategoryId);
                         if (category == null)
@@ -244,7 +340,7 @@ namespace BLL.Service
 
                         Product oProduct = _unitOfWork.ProductRepository.GetSingle(x => x.IsActive == true && x.ProductId == productid);
 
-                        if(oProduct!=null)
+                        if (oProduct != null)
                         {
                             oProduct.Name = product.Name;
                             oProduct.ProductCode = product.ProductCode;
@@ -260,9 +356,9 @@ namespace BLL.Service
 
                             return GlobalConstant.OPERATION_SUCCESS;
                         };
-     
 
-                       
+
+
                     }
                 }
                 return GlobalConstant.OPERATION_ERROR;
@@ -282,7 +378,7 @@ namespace BLL.Service
                 if (productid > 0)
                 {
 
-                    var oProduct = _unitOfWork.ProductRepository.GetSingle(x => x.ProductId == productid && x.IsActive==true);
+                    var oProduct = _unitOfWork.ProductRepository.GetSingle(x => x.ProductId == productid && x.IsActive == true);
                     if (oProduct == null)
                         return GlobalConstant.OPERATION_DATA_NOT_FOUND;
 

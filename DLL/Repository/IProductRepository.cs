@@ -15,6 +15,9 @@ namespace DLL.Repository
         ProductPrice GetProductPriceById(long productId);
         Stock GetProductStock(long productId);
         int UpdateStock(long productId, decimal qty);
+        List<VwProduct> GetAllProductVw();
+        VwProduct GetProductVwById(long productId);
+
     }
 
     public class ProductRepository : BaseRepository<Product>, IProductRepository
@@ -57,6 +60,16 @@ namespace DLL.Repository
             }
           
             
+        }
+
+        public List<VwProduct> GetAllProductVw()
+        {
+            return _context.VwProduct.Where(x => x.IsActive==true).ToList();
+        }
+
+        public VwProduct GetProductVwById(long productId)
+        {
+            return _context.VwProduct.FirstOrDefault(x => x.IsActive == true && x.ProductId == productId);
         }
     }
 }
