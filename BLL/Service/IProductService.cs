@@ -16,8 +16,9 @@ namespace BLL.Service
         string InsertProduct(ProductInsertRequest product);
         string UpdateProduct(long productid, ProductUpdateRequest product);
         string DeleteProduct(long productid);
-        List<ProductViewModel> GetAllProductVM();
+        List<ProductViewModel> GetAllProductVM(int currentPage, int pageSize);
         ProductViewModel GetSingleProductVmById(long id);
+        int GetTotalCount();
     }
 
     public class ProductService : IProductService
@@ -87,12 +88,12 @@ namespace BLL.Service
             }
         }
 
-        public List<ProductViewModel> GetAllProductVM()
+        public List<ProductViewModel> GetAllProductVM(int currentPage, int pageSize)
         {
             try
             {
                 List<ProductViewModel> oProductVMList = new List<ProductViewModel>();
-                var oProductList = _unitOfWork.ProductRepository.GetAllProductVw();
+                var oProductList = _unitOfWork.ProductRepository.GetAllProductVw(currentPage,pageSize);
                 if (oProductList != null)
                 {
                     foreach (var item in oProductList)
@@ -415,5 +416,9 @@ namespace BLL.Service
             return false;
         }
 
+        public int GetTotalCount()
+        {
+           return _unitOfWork.ProductRepository.GetCount();
+        }
     }
 }

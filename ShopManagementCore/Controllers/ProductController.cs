@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BLL.Request;
 using BLL.Request.Category;
 using BLL.Request.Product;
 using BLL.Service;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,11 +29,13 @@ namespace ShopManagementCore.Controllers
 
         [HttpGet]
         [Route("{GetAll}")]
-        public IActionResult GetAll()
+        [EnableCors("AllowOrigin")]
+        public IActionResult GetAll(int currentPage,int pageSize)
         {
             try
             {
-                var oProductVMList = _productService.GetAllProductVM();
+                Thread.Sleep(5000);
+                var oProductVMList = _productService.GetAllProductVM(currentPage, pageSize);
                 //var msg = _appsetting.Value.ShopName;
 
                 if (oProductVMList != null)
@@ -40,7 +44,7 @@ namespace ShopManagementCore.Controllers
                     response.ResponseMessage = GlobalConstant.RESPONSE_MESSAGE_SUCCESS;
                     response.ResponseToken = null;
                     response.Data = oProductVMList;
-
+                    response.DataCount = _productService.GetTotalCount();
                     return Ok(response);
                 }
 

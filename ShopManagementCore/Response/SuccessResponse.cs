@@ -11,5 +11,6 @@ namespace ShopManagementCore.Response
         public  string ResponseMessage { get; set; }
         public  string ResponseToken { get; set; }
         public  object Data { get; set; }
+        public int DataCount { get; set; }
     }
 }
