@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Utility.Helper;
+using Newtonsoft.Json;
 
 namespace ShopManagementCore
 {
@@ -43,7 +44,7 @@ namespace ShopManagementCore
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             //services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             //{

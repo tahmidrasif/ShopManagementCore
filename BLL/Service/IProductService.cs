@@ -285,6 +285,7 @@ namespace BLL.Service
                         return "Unit is not available";
                     }
 
+                    _unitOfWork.BeginTrnsaction();
                     Product oProduct = new Product()
                     {
                         Name = product.Name,
@@ -296,9 +297,36 @@ namespace BLL.Service
                         CreatedBy = GlobalConstant.ADMIN_NAME,
                         CreatedOn = DateTime.Now
                     };
-
                     _unitOfWork.ProductRepository.Add(oProduct);
                     _unitOfWork.Save();
+                    ProductPrice productPrice = new ProductPrice()
+                    {
+                        ProductId = oProduct.ProductId,
+                        UnitPurchasePrice = 0,
+                        Spvat = 0,
+                        SpotherCharge = 0,
+                        TotalPurchasePrice = 0,
+                        UnitSalesPrice = 0,
+                        Ppvat = 0,
+                        PpotherCharge = 0,
+                        TotalSalesPrice = 0,
+                        CreatedBy = "Tahmid",
+                        CreatedOn = DateTime.Now,
+                        IsActive = true
+                    };
+                    _unitOfWork.ProductRepository.InsertProductPrice(productPrice);
+                    _unitOfWork.Save();
+                    Stock ostock = new Stock()
+                    {
+                        ProductId = oProduct.ProductId,
+                        Quantity = 0,
+                        CreatedBy = "Tahmid",
+                        CreatedOn = DateTime.Now,
+                        IsActive = true
+                    };
+                    _unitOfWork.ProductRepository.InsertStock(ostock);
+                    _unitOfWork.Save();
+                    _unitOfWork.CommitTransaction();
 
                     return GlobalConstant.OPERATION_SUCCESS;
                 }
@@ -306,6 +334,7 @@ namespace BLL.Service
             }
             catch (Exception ex)
             {
+                _unitOfWork.RollbackTransaction();
                 throw ex;
             }
         }

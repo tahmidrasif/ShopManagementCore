@@ -18,6 +18,8 @@ namespace DLL.Repository
         List<VwProduct> GetAllProductVw(int currentPage, int pageSize);
         VwProduct GetProductVwById(long productId);
         int GetCount();
+        void InsertProductPrice(ProductPrice productPrice);
+        void InsertStock(Stock stock);
     }
 
     public class ProductRepository : BaseRepository<Product>, IProductRepository
@@ -75,6 +77,16 @@ namespace DLL.Repository
         public int GetCount()
         {
             return _context.VwProduct.Count();
+        }
+
+        public void InsertProductPrice(ProductPrice productPrice)
+        {
+            _context.ProductPrice.Add(productPrice);
+        }
+
+        public void InsertStock(Stock stock)
+        {
+            _context.Stock.Add(stock);
         }
     }
 }

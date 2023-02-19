@@ -34,7 +34,7 @@ namespace ShopManagementCore.Controllers
         {
             try
             {
-                Thread.Sleep(5000);
+                
                 var oProductVMList = _productService.GetAllProductVM(currentPage, pageSize);
                 //var msg = _appsetting.Value.ShopName;
 
@@ -108,13 +108,14 @@ namespace ShopManagementCore.Controllers
         {
             try
             {
+                Thread.Sleep(5000);
                 if (prodrequest == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, "Error in Parameters");
                 }
 
                 if(String.IsNullOrEmpty(prodrequest.ProductCode) || prodrequest.CategoryId <=0 
-                    || prodrequest.SubCategoryId<=0 || prodrequest.UnitId!<= 0 )
+                    || prodrequest.SubCategoryId<=0 || prodrequest.UnitId<= 0 )
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, "Error in Parameters");
                 }
